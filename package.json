@@ -1,0 +1,18 @@
+{
+  "name": "restful-resto",
+  "version": "1.0.0",
+  "description": "A Node.js RESTful API tutorial project (Builing a simple shop API)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "restful"
+  ],
+  "author": "Ronald Dadds",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
