@@ -1,10 +1,25 @@
 const express = require('express');
 const morgan =  require('morgan');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
 
 const app = express();
+
+mongoose.connect('mongodb+srv://' + process.env.MONGO_ATLAS_USER +
+                                        process.env.MONGO_ATLAS_PW +
+                                        process.env.MONGO_ATLAS_PART_URI,
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+    // We're connected!
+})
 
 app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({extended: false})); // false = only support simple bodies for url encoded data
