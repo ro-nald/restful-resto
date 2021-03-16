@@ -7,7 +7,7 @@ const orderRoutes = require('./api/routes/orders');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://' + process.env.MONGO_ATLAS_USER +
+mongoose.connect('mongodb+srv://' + process.env.MONGO_ATLAS_USER + ":" +
                                         process.env.MONGO_ATLAS_PW +
                                         process.env.MONGO_ATLAS_PART_URI,
     {
