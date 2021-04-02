@@ -22,6 +22,7 @@ db.once('open', function() {
 })
 
 app.use(morgan('dev'))
+app.use('/uploads', express.static('uploads'))
 app.use(bodyParser.urlencoded({extended: false})); // false = only support simple bodies for url encoded data
 app.use(bodyParser.json());
 

@@ -1,12 +1,41 @@
 const express = require('express');
 const Product = require('../models/products');
 const mongoose = require('mongoose');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+})
 
 const router = express.Router();
 
+const fileFilter = (req, file, cb) => {
+    // Access file information
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        // Accept file
+        cb(null, true);
+    } else {
+        // Reject a file
+        cb(null, false);
+    }
+}
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 5 // 5 MB
+    },
+    fileFilter: fileFilter
+})
+
 router.get("/", (req, res, next) => {
     Product.find()
-        .select('name price _id')
+        .select('name price _id productImage')
         .exec()
         .then(docs => {
             const response = {
@@ -15,6 +44,7 @@ router.get("/", (req, res, next) => {
                     return {
                         name: doc.name,
                         price: doc.price,
+                        productImage: doc.productImage,
                         _id: doc._id,
                         request: {
                             type: 'GET',
@@ -39,11 +69,14 @@ router.get("/", (req, res, next) => {
         });
 });
 
-router.post("/", (req, res, next) => {
+router.post("/", upload.single('productImage'), // One file only
+    (req, res, next) => {
+    console.log(req.file);
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        price: req.body.price
+        price: req.body.price,
+        productImage: req.file.path
     })
     product.save().then( result => {
         console.log(result);
@@ -72,6 +105,7 @@ router.get('/:productId',
     (req, res, next) => {
     const id = req.params.productId;
     Product.findById(id)
+        .select('name price _id productImage')
         .exec()
         .then( doc => {
             console.log(doc);
@@ -79,16 +113,17 @@ router.get('/:productId',
                 res.status(200).json({
                     name: doc.name,
                     price: doc.price,
+                    productImage: doc.productImage,
                     _id: doc._id,
-                    request: {
+                    request_method1: {
                         type: 'GET',
                         url: "http://localhost:3000/products/" + doc._id
                     },
-                    request: {
+                    request_method2: {
                         type: 'PATCH',
                         url: "http://localhost:3000/products/" + doc._id
                     },
-                    request: {
+                    request_method3: {
                         type: 'DELETE',
                         url: "http://localhost:3000/products/" + doc._id
                     }
